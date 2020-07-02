@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>朋友圈抽奖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            background-image: url(img/bg.jpg);
+            background-size: 100% auto;
+        }
+        
+        .button {
+            position: absolute;
+            /* width: 100%;
+            height: 100%; */
+            width: 100px;
+            height: 100px;
+            top: 30%;
+            left: 50%;
+            margin-left: -60px;
+            z-index: 100;
+        }
+        
+        .button .btnOn {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            font-size: 18px;
+            background-color: red;
+            border: 0px solid red;
+            box-shadow: 0 1px white inset;
+            font-weight: 500;
+            text-align: center;
+        }
+        
+        .button .btnOn:active {
+            /* box-shadow: .05em .1em .2em rgba(0, 0, 0, .6) inset; */
+            border: 0px solid red;
+        }
+        
+        .showOut {
+            width: 100%;
+            height: 112px;
+            /* background-color: rgba(0, 0, 0, 0.2); */
+            margin-top: 519px;
+            position: absolute;
+        }
+        
+        .showOut .show {
+            position: relative;
+            width: 302px;
+            height: 112px;
+            margin: 0 auto 0 auto;
+            /* background-color: rgba(0, 0, 0, 0.2); */
+        }
+        
+        .showOut .show .showOn {
+            width: 35px;
+            height: 35px;
+            border: 2px solid red;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0);
+            z-index: 10;
+            position: absolute;
+            /* margin-left: 36px; */
+            /* left: 0px; */
+            opacity: 0;
+        }
+        /* 打码遮罩 */
+        /* .blur:after {
+            position: absolute;
+            width: 80%;
+            height: 110px;
+            top: 78%;
+            left: 15%;
+            background-color: rgba(255, 255, 255, 0.96);
+            content: "";
+            filter: blur(7px);
+            为了模糊更明显，调高模糊度
+            z-index: 2;
+        } */
+    </style>
+</head>
+
+<body>
+    <div class="button">
+        <input class="btnOn" type="button" value="抽奖" onclick="raffle(this)">
+    </div>
+    <div class="showOut">
+        <div class="show">
+            <div class="showOn"></div>
+        </div>
+    </div>
+    <!-- 打码遮罩 -->
+    <!-- <div class="blur"></div> -->
+
+    <script>
+        var btn = document.getElementsByTagName("input")[0];
+        var box = document.getElementsByClassName("showOn")[0];
+
+        var boxWidth = 0;
+        var boxHeight = 0;
+        var id = 0;
+
+
+        var flag = 1;
+
+        
+        //随机一个时间 1<圈数<3
+        var max = 108;
+        var min = 36;
+        var timeAll = Math.floor(Math.random() * ((max - min + 1) * 100)) + min * 100;
+        // console.log(timeAll);
+
+        //按钮点击后执行
+        function raffle(val) {
+            clearInterval(now);  
+            box.style.opacity = 1;
+
+            if (flag = 0) {
+                val.removeAttribute("disabled");
+                return false;
+            } else {
+                val.setAttribute("disabled", true)
+                flag = 0;
+            }
+            var runBox = setInterval(function() {
+                id += 1
+                switch (id) {
+                    case 8:
+                        boxWidth = 0;
+                        boxHeight += 36.3
+                        break;
+                    case 16:
+                        boxWidth = 0;
+                        boxHeight += 36.3
+                        break;
+                    case 18:
+                        id = boxWidth = boxHeight = 0;
+                        break;
+                    default:
+                        boxWidth += 36.3;
+                        break;
+                }
+                box.style.left = boxWidth + 'px';
+                box.style.top = boxHeight + 'px';
+                var left = box.style.left;
+                var top = box.style.top;
+                var getBox = {
+                        left: left,
+                        top: top
+                    }
+                    // console.log(getBox);
+                    // settime(val);
+            }, 200); //timeEach
+
+            setTimeout(function() {
+                    clearInterval(runBox);
+                    val.setAttribute("disabled", true)
+                    flag = 1;
+                    win();
+                }, timeAll) //timeAll
+        }
+
+        //抽奖完毕
+        function win() {
+            var arr = ['恭', '喜', '这', '位', '朋', '友']
+
+            for (var i = 1; i <= 6; i++) {         
+                (function(i) {
+                    setTimeout(function() {               
+                        console.log(arr[i - 1]);            
+                    }, 400 * i);         
+                })(i);      
+            }
+        }
+
+        //定时开始抽奖
+        var now = setInterval(function() {
+            console.log(nowTime());
+
+            function nowTime(h, m, s) {
+                var date = new Date();
+                var year = date.getFullYear();
+                var month = date.getMonth() + 1;
+                var dates = date.getDay(); //当成索引号
+                var week = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+                return year + '年' + month + '月' + date.getDate() + '日 ' + getTime() + '\n';
+
+                function getTime() {
+                    var time = new Date();
+                    this.h = time.getHours();
+                    h = this.h < 10 ? '0' + this.h : this.h;
+                    this.m = time.getMinutes();
+                    m = this.m < 10 ? '0' + this.m : this.m;
+                    this.s = time.getSeconds();
+                    s = this.s < 10 ? '0' + this.s : this.s;
+
+                    return h + ':' + m + ':' + s;
+                }
+            }
+
+            // 定时
+            if (h == 17 && m == 0 && s == 0) {
+                btn.onclick();
+            } else {
+                // console.log(false);
+                return
+            }
+        }, 1000);
+    </script>
+</body>
+
+</html>
